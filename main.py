@@ -16,9 +16,37 @@
 #
 import webapp2
 
+form = """
+    <form method="post">
+        <h1>Signup</h1>
+        <br>
+        <label>Username
+            <input type="text" name="username">
+        </label>
+        <br>
+        <label>Password
+            <input type="password" name="password">
+        </label>
+        <br>
+        <label>Verify Password
+            <input type="password" name="verify">
+        </label>
+        <br>
+        <label>Email (optional)
+            <input type="text" name="email">
+        </label>
+        <br>
+        <input type=submit>
+"""
+
+
+
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write('Hello world!')
+        self.response.write(form)
+        
+    def post(self):
+        self.response.write("Thanks!")
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
