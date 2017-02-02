@@ -16,13 +16,14 @@
 #
 import webapp2
 import re
+import cgi
 
 form = """
     <form method="post">
         <h1>Signup</h1>
         <br>
         <label>Username
-            <input type="text" name="username">
+            <input type="text" name="username" value="%(username)s">
             <span style="color: red"> %(username_error)s </span>
         </label>
         <br>
@@ -36,7 +37,7 @@ form = """
         </label>
         <br>
         <label>Email (optional)
-            <input type="text" name="email">
+            <input type="text" name="email" value="%(email)s">
             <span style="color: red"> %(email_error)s </span>
         </label>
         <br>
@@ -60,15 +61,22 @@ def valid_email(email):
     if email:
         return email_re.match(email)
     return True
-    
+
+
+def escape_html(s):
+    return cgi.escape(s, quote=True)
 
 class MainHandler(webapp2.RequestHandler):
 
     def write_form(self,
+                   username="",
+                   email="",
                    username_error="",
                    password_error="",
                    email_error=""):
-        self.response.write(form % {"username_error" : username_error,
+        self.response.write(form % {"username"       : escape_html(username),
+                                    "email"          : escape_html(email),
+                                    "username_error" : username_error,
                                     "password_error" : password_error,
                                     "email_error"    : email_error
                                     })
@@ -86,11 +94,17 @@ class MainHandler(webapp2.RequestHandler):
         email_isvalid    = valid_email(email)
         
         if not username_isvalid:
-            self.write_form(username_error="Invalid Username")
+            self.write_form(username, 
+                            email, 
+                            username_error="Invalid Username")
         elif not password_isvalid:
-            self.write_form(password_error="Invalid Password Combo")
+            self.write_form(username, 
+                            email, 
+                            password_error="Invalid Password Combo")
         elif not email_isvalid:
-            self.write_form(email_error="Invalid Email Address")
+            self.write_form(username, 
+                            email, 
+                            email_error="Invalid Email Address")
         else:
             self.response.out.write("<h1>Welcome, " + username + "!</h1>")
 
