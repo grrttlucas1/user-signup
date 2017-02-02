@@ -20,6 +20,7 @@ import cgi
 
 
 form = """
+
     <form method="post">
         <h1>Signup</h1>
         <br>
@@ -42,7 +43,9 @@ form = """
             <span style="color: red"> %(email_error)s </span>
         </label>
         <br>
+        <br>
         <input type=submit>
+    </form>
 """
 
 
