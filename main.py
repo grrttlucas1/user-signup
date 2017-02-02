@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 import webapp2
+import re
 
 form = """
     <form method="post">
@@ -39,14 +40,41 @@ form = """
         <input type=submit>
 """
 
+def valid_user(username):
+    username_re = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+    return username_re.match(username)
+    
 
+def valid_pw(password, verify):
+    password_re = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+    if password == verify:
+        return password_re.match(password)
+    return False
+    
+    
+def valid_email(email):
+    email_re = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+    if email:
+        return email_re.match(email)
+    return True
+    
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         self.response.write(form)
         
     def post(self):
-        self.response.write("Thanks!")
+        user_username = valid_user(self.request.get('username'))
+        user_password = self.request.get('password')
+        user_pwverify = self.request.get('verify')
+        user_pwvalid  = valid_pw(user_password, user_pwverify)
+        user_email    = valid_email(self.request.get('email'))
+        
+        if not (user_username and user_pwvalid and user_email):
+            self.response.out.write(form)
+        else:
+            self.response.out.write("Welcome!")
+
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
