@@ -18,6 +18,7 @@ import webapp2
 import re
 import cgi
 
+
 form = """
     <form method="post">
         <h1>Signup</h1>
@@ -44,6 +45,7 @@ form = """
         <input type=submit>
 """
 
+
 def valid_user(username):
     username_re = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
     return username_re.match(username)
@@ -66,6 +68,7 @@ def valid_email(email):
 def escape_html(s):
     return cgi.escape(s, quote=True)
 
+    
 class MainHandler(webapp2.RequestHandler):
 
     def write_form(self,
@@ -106,9 +109,17 @@ class MainHandler(webapp2.RequestHandler):
                             email, 
                             email_error="Invalid Email Address")
         else:
-            self.response.out.write("<h1>Welcome, " + username + "!</h1>")
+            self.redirect("/welcome?username=" + username)
+            
 
-
+class WelcomeHandler(webapp2.RequestHandler):
+    
+    def get(self):
+        username = self.request.get('username')
+        self.response.out.write("<h1>Welcome, " + username + "!</h1>")
+        
+        
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/welcome', WelcomeHandler)
 ], debug=True)
